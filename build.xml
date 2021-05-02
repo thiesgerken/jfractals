@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="jar" name="Create Runnable Jar for Project JFractals with Jar-in-Jar Loader">
+
+	<target name="clean">
+		<delete dir="./bin" />
+		<delete dir="./dist" />
+	</target>
+
+	<target name="compile" depends="clean" description="Compiles the project's source code">
+		<mkdir dir="./bin" />
+		<javac srcdir="./src" destdir="./bin" debug="off" includeantruntime="false">
+			<classpath>
+				<fileset dir="./lib" includes="*.jar" />
+			</classpath>
+		</javac>
+		<copy todir="./bin">
+			<fileset dir="./src" includes="**/*.png,**/*.cl" />
+		</copy>
+	</target>
+
+	<target name="jar" depends="compile">
+		<jar destfile="./dist/jfractals.jar">
+			<manifest>
+				<attribute name="Main-Class" value="org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader" />
+				<attribute name="Rsrc-Main-Class" value="de.thiesgerken.fractals.cli.Main" />
+				<attribute name="Class-Path" value="." />
+				<attribute name="Rsrc-Class-Path" value="./ junit.jar gluegen-rt-natives-windows-amd64.jar gluegen-rt.jar jocl-natives-windows-amd64.jar jocl.jar junit.jar jogl-all-natives-windows-amd64.jar jogl-all.jar gluegen-rt-natives-linux-amd64.jar gluegen-rt-natives-linux-i586.jar gluegen-rt-natives-windows-i586.jar jocl-natives-linux-amd64.jar jocl-natives-linux-i586.jar jocl-natives-windows-i586.jar jogl-all-natives-linux-amd64.jar jogl-all-natives-linux-i586.jar jogl-all-natives-windows-i586.jar" />
+			</manifest>
+			<zipfileset src="jar-in-jar-loader.zip" />
+			<fileset dir="./bin" />
+			<zipfileset dir="./lib" includes="*.jar" />
+		</jar>
+
+  		<exec executable="cat" output="./dist/jfractals">
+    			<arg value="./header.sh"/>
+    			<arg value="./dist/jfractals.jar"/>
+  		</exec>
+	</target>
+</project>
